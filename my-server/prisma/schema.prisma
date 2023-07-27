@@ -1,0 +1,42 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator js {
+  provider = "prisma-client-js"
+}
+
+model Trainer {
+  id       String             @id
+  name     String
+  pokemons TrainerToPokemon[]
+
+  @@map("trainer")
+}
+
+model Pokemon {
+  id   String @id
+  name String
+
+  hp             Int
+  attack         Int
+  defense        Int
+  specialAttack  Int @map("special_attack")
+  specialDefense Int @map("special_defense")
+  speed          Int
+
+  trainers TrainerToPokemon[]
+
+  @@map("pokemon")
+}
+
+model TrainerToPokemon {
+  trainerId String  @map("trainer_id")
+  trainer   Trainer @relation(fields: [trainerId], references: [id])
+  pokemonId String  @map("pokemon_id")
+  pokemon   Pokemon @relation(fields: [pokemonId], references: [id])
+
+  @@id([trainerId, pokemonId])
+  @@map("trainer_to_pokemon")
+}
